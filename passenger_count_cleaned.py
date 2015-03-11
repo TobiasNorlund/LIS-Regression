@@ -29,7 +29,7 @@ def parseDataX (data):
     weekTime = np.zeros(data_size) 
     yearDay = np.zeros(data_size)
     weatherFeatures = np.empty([data_size, 6])
-    final_train_data_x = np.empty([data_size, 2])
+    final_train_data_x = np.empty([data_size, 1])
 
 
     for i in range (0, data_size):
