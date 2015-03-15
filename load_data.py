@@ -9,12 +9,11 @@ import sklearn.linear_model as sklin
 import sklearn.metrics as skmet
 # Provides train-test split, cross-validation, etc.
 import sklearn.cross_validation as skcv
-# Provides grid search functionality
-import sklearn.grid_search as skgs
-import numpy as np
-import sklearn.svm as svm
 
-MAX_TRAIN_SAMPLES = 5000
+import numpy as np
+
+
+MAX_TRAIN_SAMPLES = 5000 # 10427
 
 def get_features(row):
     t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
@@ -26,8 +25,8 @@ def get_features(row):
 
     return np.array([[float(weekTime), float(t.month),  float(row[1]), c[0], c[1], c[2], c[3], float(row[3]), float(row[4]), float(row[5]), float(row[6])]]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #
 
-def read_data(inpath):
-    X = np.empty((0,11))
+def read_data(inpath, get_features_fun):
+    X = None
     with open(inpath, 'r') as fin:
         reader = csv.reader(fin, delimiter=',')
         i = 0
@@ -35,20 +34,26 @@ def read_data(inpath):
             i = i+1
             if(i > MAX_TRAIN_SAMPLES):
                 break
-            X = np.append(X, get_features(row), axis=0)
+            
+            features = get_features_fun(row)
+            
+            if(X is None):
+                X = np.empty((0,features.shape[1]))
+            
+            X = np.append(X, features, axis=0)
     return np.atleast_2d(X)
 
 # Define score function
 def logscore(gtruth, pred):
     pred = np.clip(pred, 0, np.inf)
     logdif = np.log(1 + gtruth) - np.log(1 + pred)
-    return -np.sqrt(np.mean(np.square(logdif)))
+    return np.sqrt(np.mean(np.square(logdif)))
 scorefun = skmet.make_scorer(logscore)
 
 def load(get_features_fun = get_features):
 
-    X = read_data('project_data/train.csv')
-    X_test = read_data('project_data/validate.csv')
+    X = read_data('project_data/train.csv', get_features_fun)
+    X_test = read_data('project_data/validate.csv', get_features_fun)
     Y = np.genfromtxt('project_data/train_y.csv', delimiter=',')
     Y = Y[0:MAX_TRAIN_SAMPLES]
     print('Shape of X:', X.shape)
