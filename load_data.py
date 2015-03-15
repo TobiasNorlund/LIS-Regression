@@ -13,7 +13,7 @@ import sklearn.cross_validation as skcv
 import numpy as np
 
 
-MAX_TRAIN_SAMPLES = 5000 # 10427
+MAX_TRAIN_SAMPLES = 10427 # 10427
 
 def get_features(row):
     t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
@@ -47,13 +47,18 @@ def read_data(inpath, get_features_fun):
 def logscore(gtruth, pred):
     pred = np.clip(pred, 0, np.inf)
     logdif = np.log(1 + gtruth) - np.log(1 + pred)
-    return np.sqrt(np.mean(np.square(logdif)))
-scorefun = skmet.make_scorer(logscore)
+    
+    score = np.sqrt(np.mean(np.square(logdif)))
+    print('logscore: ', score, ' mean error:', np.mean(np.abs(gtruth - pred)))
+    return score
+scorefun = skmet.make_scorer(logscore, greater_is_better=False)
 
 def load(get_features_fun = get_features):
 
     X = read_data('project_data/train.csv', get_features_fun)
-    X_test = read_data('project_data/validate.csv', get_features_fun)
+    X_val = read_data('project_data/validate.csv', get_features_fun)
+    X_test = read_data('project_data/test.csv', get_features_fun)
+    
     Y = np.genfromtxt('project_data/train_y.csv', delimiter=',')
     Y = Y[0:MAX_TRAIN_SAMPLES]
     print('Shape of X:', X.shape)
@@ -62,10 +67,12 @@ def load(get_features_fun = get_features):
     # Normalize Data
     means = np.mean(X, axis=0)
     stds = np.std(X, axis=0)
+    stds[stds == 0] = 1
     
     X_norm = (X-means)/stds
+    X_val_norm = (X_val-means)/stds
     X_test_norm = (X_test - means)/stds
 
     print('Data loaded sucessfully')
     
-    return (X_norm, Y, X_test_norm)
+    return (X_norm, Y, X_val_norm, X_test_norm)
