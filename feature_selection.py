@@ -19,8 +19,7 @@ from sklearn.feature_selection import f_regression
 X = load_data.X_norm
 Y = load_data.Y
 
-X_new = SelectKBest(chi2, k=2).fit_transform(X, y)
-print 
+X_new = SelectKBest(f_regression, k=2).fit_transform(X, y)
 print X_new.shape
 
 # Create and train linear regressor
