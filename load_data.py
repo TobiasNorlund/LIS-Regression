@@ -38,14 +38,6 @@ def read_data(inpath):
             X = np.append(X, get_features(row), axis=0)
     return np.atleast_2d(X)
 
-
-X = read_data('project_data/train.csv')
-X_test = read_data('project_data/validate.csv')
-Y = np.genfromtxt('project_data/train_y.csv', delimiter=',')
-Y = Y[0:MAX_TRAIN_SAMPLES]
-print('Shape of X:', X.shape)
-print('Shape of Y:', Y.shape)
-
 # Define score function
 def logscore(gtruth, pred):
     pred = np.clip(pred, 0, np.inf)
@@ -53,11 +45,22 @@ def logscore(gtruth, pred):
     return -np.sqrt(np.mean(np.square(logdif)))
 scorefun = skmet.make_scorer(logscore)
 
-# Normalize Data
-means = np.mean(X, axis=0)
-stds = np.std(X, axis=0)
+def load(get_features_fun = get_features):
 
-X_norm = (X-means)/stds
-X_test_norm = (X_test - means)/stds
+    X = read_data('project_data/train.csv')
+    X_test = read_data('project_data/validate.csv')
+    Y = np.genfromtxt('project_data/train_y.csv', delimiter=',')
+    Y = Y[0:MAX_TRAIN_SAMPLES]
+    print('Shape of X:', X.shape)
+    print('Shape of Y:', Y.shape)
 
-print('Data loaded sucessfully')
+    # Normalize Data
+    means = np.mean(X, axis=0)
+    stds = np.std(X, axis=0)
+    
+    X_norm = (X-means)/stds
+    X_test_norm = (X_test - means)/stds
+
+    print('Data loaded sucessfully')
+    
+    return (X_norm, Y, X_test_norm)
