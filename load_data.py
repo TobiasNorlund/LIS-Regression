@@ -23,7 +23,7 @@ def get_features(row):
     c = [0., 0., 0., 0.]
     c[int(row[2])] = 1.
 
-    return np.array([[float(weekTime), float(t.month),  float(row[1]), c[0], c[1], c[2], c[3], float(row[3]), float(row[4]), float(row[5]), float(row[6])]]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #
+    return np.array([[float(weekTime), float(t.month), c[0], c[1], c[2], c[3]]]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #
 
 def read_data(inpath, get_features_fun):
     X = None
@@ -46,7 +46,7 @@ def read_data(inpath, get_features_fun):
 # Define score function
 def logscore(gtruth, pred):
     pred = np.clip(pred, 0, np.inf)
-    logdif = np.log(1 + gtruth) - np.log(1 + pred)
+    logdif = gtruth -pred
     
     score = np.sqrt(np.mean(np.square(logdif)))
     print('logscore: ', score, ' mean error:', np.mean(np.abs(gtruth - pred)))
@@ -61,6 +61,7 @@ def load(get_features_fun = get_features):
     
     Y = np.genfromtxt('project_data/train_y.csv', delimiter=',')
     Y = Y[0:MAX_TRAIN_SAMPLES]
+    Y = np.log(1+Y)
     print('Shape of X:', X.shape)
     print('Shape of Y:', Y.shape)
 

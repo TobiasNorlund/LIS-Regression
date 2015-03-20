@@ -4,6 +4,12 @@ import load_data
 import datetime
 import time
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
+
+enc = OneHotEncoder()
+enc.n_values = 24
+enc.n_values_ = 24
+enc.feature_indices_ = np.array([0, 24], dtype='int32')
 
 """ [weektime, month] """
 def get_features2(row):
@@ -11,10 +17,16 @@ def get_features2(row):
     t2 = time.strptime(str(row[0]), "%Y-%m-%d %H:%M:%S") # t is timestamp of train_x
     weekTime = (t2.tm_wday*24 + t2.tm_hour + t2.tm_min/60 + t2.tm_sec/3600) #in hours
 
-    c = [0., 0., 0., 0.]
-    #c[int(row[2])] = 1.
+    hours = enc.transform([[t2.tm_hour]]).toarray().tolist()[0]
 
-    return np.array([[float(weekTime), float(t.month)]]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #
+    c = [0., 0., 0., 0.]
+    c[int(row[2])] = 1.
+
+    feature_vec = [float(weekTime), float(t.month), c[0], c[1], c[2], c[3], float(row[1]), float(row[3])]
+    feature_vec.extend(hours)
+
+    return np.array([feature_vec]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #
+
 
 (X, Y, X_val, X_test) = load_data.load(get_features2)
 
@@ -27,9 +39,9 @@ import sklearn.grid_search as skgs # Provides grid search functionality
 regressor = svm.SVR(kernel = 'rbf')
 
 # Perform gris search
-param_grid = { 'epsilon': [0.1],
-               'C': [100],
-               'gamma': [1000],
+param_grid = { 'epsilon': [0.5],
+               'C': [10],
+               'gamma': [1e-3, 1e-2, 1e-1, 1],
                'degree': [1]
                }
 
