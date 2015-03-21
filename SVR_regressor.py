@@ -22,7 +22,7 @@ def get_features2(row):
     c = [0., 0., 0., 0.]
     c[int(row[2])] = 1.
 
-    feature_vec = [float(weekTime), float(t.month), c[0], c[1], c[2], c[3], float(row[1]), float(row[3])]
+    feature_vec = [float(weekTime), float(t.month), float(row[1]), float(row[3]), c[0], c[1], c[2], c[3]]
     feature_vec.extend(hours)
 
     return np.array([feature_vec]) #, float(t.hour), float(row[1]), float(row[3]), float(row[4]), float(row[5])]]) #np.array([[weekTime]]) #

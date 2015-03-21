@@ -68,6 +68,8 @@ def load(get_features_fun = get_features):
     # Normalize Data
     means = np.mean(X, axis=0)
     stds = np.std(X, axis=0)
+    means[4:] = 0
+    stds[4:] = 1
     stds[stds == 0] = 1
     
     X_norm = (X-means)/stds
