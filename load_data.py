@@ -13,7 +13,7 @@ import sklearn.cross_validation as skcv
 import numpy as np
 
 
-MAX_TRAIN_SAMPLES = 10427 # 10427
+MAX_TRAIN_SAMPLES = 5000 # 10427
 
 def get_features(row):
     t = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')

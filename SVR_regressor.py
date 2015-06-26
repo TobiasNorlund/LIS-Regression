@@ -41,7 +41,7 @@ regressor = svm.SVR(kernel = 'rbf')
 # Perform gris search
 param_grid = { 'epsilon': [0.5],
                'C': [10],
-               'gamma': [1e-3, 1e-2, 1e-1, 1],
+               'gamma': [1e-2, 1e-1],
                'degree': [1]
                }
 
